@@ -1,6 +1,6 @@
 package com.aquariux.crypto.client.impl;
 
-import com.aquariux.crypto.client.IPriceAggregationClient;
+import com.aquariux.crypto.client.IPriceRetrievalClient;
 import com.aquariux.crypto.configuration.PriceAggregationConfig;
 import com.aquariux.crypto.exception.PriceRetrievalException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,12 +11,12 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
-public class PriceAggregationClient implements IPriceAggregationClient {
+public class PriceRetrievalClient implements IPriceRetrievalClient {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private final PriceAggregationConfig config;
 
-    public PriceAggregationClient(PriceAggregationConfig config) {
+    public PriceRetrievalClient(PriceAggregationConfig config) {
         this.config = config;
     }
 

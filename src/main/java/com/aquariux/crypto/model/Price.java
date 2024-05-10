@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PriceAggregation {
+public class Price {
     @Id
     @Column(unique = true, nullable = false)
     private String pair;
     private double bid;
     private double ask;
+    private boolean allowTrading;
 }
