@@ -1,8 +1,7 @@
 package com.aquariux.crypto.controller;
 
-import com.aquariux.crypto.exception.UserWalletNotFoundException;
-import com.aquariux.crypto.model.UserWallet;
 import com.aquariux.crypto.model.Response;
+import com.aquariux.crypto.model.UserWallet;
 import com.aquariux.crypto.service.impl.UserWalletService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ public class UserWalletController {
     private final UserWalletService userService;
 
     @GetMapping("/v1.0/{username}")
-    public Response<UserWallet> getUser(@PathVariable String username) throws UserWalletNotFoundException {
+    public Response<UserWallet> getUser(@PathVariable String username) throws Exception {
         Response<UserWallet> response = new Response<>();
         UserWallet userWallet = userService.getUserByUsername(username);
         response.setCode(200);

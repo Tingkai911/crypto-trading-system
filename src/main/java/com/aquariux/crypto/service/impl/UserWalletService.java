@@ -17,7 +17,7 @@ public class UserWalletService implements IUserWalletService {
     private final UserWalletRepository userWalletRepository;
 
     @Override
-    public UserWallet getUserByUsername(String username) throws UserWalletNotFoundException {
+    public UserWallet getUserByUsername(String username) throws Exception {
         Optional<UserWallet> user3 = userWalletRepository.findByUsername(username);
         if (user3.isEmpty()) {
             throw new UserWalletNotFoundException(username + " is not found");

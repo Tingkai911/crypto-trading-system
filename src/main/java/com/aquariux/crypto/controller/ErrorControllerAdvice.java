@@ -14,7 +14,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(UserWalletNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public Response handleException(Exception ex) {
+    public Response handleUserWalletException(Exception ex) {
         log.error(ex.getMessage(), ex);
         Response response = new Response();
         response.setCode(HttpStatus.NOT_FOUND.value());
@@ -22,4 +22,13 @@ public class ErrorControllerAdvice {
         return response;
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public Response handleException(Exception ex) {
+        log.error(ex.getMessage(), ex);
+        Response response = new Response();
+        response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setMessage(ex.getMessage());
+        return response;
+    }
 }

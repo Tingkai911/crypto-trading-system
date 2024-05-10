@@ -11,11 +11,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserWallet {
+public class PriceAggregation {
     @Id
     @Column(unique = true, nullable = false)
-    private String username;
-    private double usdt;
-    private double eth;
-    private double btc;
+    private String pair;
+    private double bid;
+    private double ask;
 }
