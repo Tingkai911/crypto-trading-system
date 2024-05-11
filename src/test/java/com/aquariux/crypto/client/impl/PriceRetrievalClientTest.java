@@ -4,11 +4,11 @@ import com.aquariux.crypto.configuration.PriceAggregationConfig;
 import com.aquariux.crypto.exception.PriceRetrievalException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class PriceRetrievalClientTest {
 
     @Mock
@@ -28,13 +29,6 @@ public class PriceRetrievalClientTest {
     private PriceRetrievalClient priceRetrievalClient;
 
     private final ObjectMapper mapper = new ObjectMapper();
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        when(config.getBinance()).thenReturn("https://test-binance-url.com");
-        when(config.getHuobi()).thenReturn("https://test-huobi-url.com");
-    }
 
     @Test
     void testGetPriceFromBinance_Success() throws Exception {
