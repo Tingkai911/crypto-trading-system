@@ -1,6 +1,5 @@
 package com.aquariux.crypto.runner;
 
-import com.aquariux.crypto.model.Transaction;
 import com.aquariux.crypto.model.UserWallet;
 import com.aquariux.crypto.repository.ITransactionRepository;
 import com.aquariux.crypto.repository.IUserWalletRepository;
@@ -9,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 
 // Run once at the start to load user data
 @Slf4j
@@ -23,9 +20,9 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        userRepository.save(new UserWallet("user1", 50000, 0, 0));
+        userRepository.save(new UserWallet("user1", 50000D, 0D, 0D));
 
-        transactionRepository.save(new Transaction("user1", Transaction.Type.ASK, "ETHUSDT", 10, Instant.now()));
-        transactionRepository.save(new Transaction("user1", Transaction.Type.BID,  "BTCUSDT", 100, Instant.now()));
+//        transactionRepository.save(new Transaction("user1", Transaction.Type.ASK, "ETHUSDT", 0, 0, 0, Instant.now()));
+//        transactionRepository.save(new Transaction("user1", Transaction.Type.BID,  "BTCUSDT", 0, 0, 0, Instant.now()));
     }
 }

@@ -49,7 +49,7 @@ public class PriceAggregationRunner {
                 }
                 else {
                     // Stop trading for that pair (To mark as unavailable in DB)
-                    aggregatedPrices.add(new Price(symbol, 0, 0, false));
+                    aggregatedPrices.add(new Price(symbol, 0D, 0D, false));
                 }
             }
 

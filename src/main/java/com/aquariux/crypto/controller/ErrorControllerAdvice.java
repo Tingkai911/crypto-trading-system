@@ -1,6 +1,7 @@
 package com.aquariux.crypto.controller;
 
 import com.aquariux.crypto.exception.PriceNotFoundException;
+import com.aquariux.crypto.exception.TransactionException;
 import com.aquariux.crypto.exception.UserWalletNotFoundException;
 import com.aquariux.crypto.model.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,16 @@ public class ErrorControllerAdvice {
         log.error(ex.getMessage(), ex);
         Response response = new Response();
         response.setCode(HttpStatus.NOT_FOUND.value());
+        response.setMessage(ex.getMessage());
+        return response;
+    }
+
+    @ExceptionHandler(TransactionException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    private Response handleTransactionException(Exception ex) {
+        log.error(ex.getMessage(), ex);
+        Response response = new Response();
+        response.setCode(HttpStatus.BAD_REQUEST.value());
         response.setMessage(ex.getMessage());
         return response;
     }

@@ -31,11 +31,15 @@ public class Transaction {
         }
     }
 
-    public Transaction(String username, Type type, String symbol, double amount, Instant timestamp) {
+    public Transaction(String username, Type type, String symbol,
+                       double amount, double ask, double bid,
+                       Instant timestamp) {
         this.username = username;
         this.type = type;
         this.symbol = symbol;
         this.amount = amount;
+        this.ask = ask;
+        this.bid = bid;
         this.timestamp = timestamp;
     }
 
@@ -46,9 +50,14 @@ public class Transaction {
     private String username;
     @NotBlank
     private String symbol;
+    @NotNull
     private Type type;
     @NotNull
     private Double amount;
+    @NotNull
+    private Double ask;
+    @NotNull
+    private Double bid;
     @NotNull
     private Instant timestamp;
 }

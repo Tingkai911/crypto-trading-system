@@ -1,5 +1,6 @@
 package com.aquariux.crypto.controller;
 
+import com.aquariux.crypto.exception.TransactionException;
 import com.aquariux.crypto.model.Response;
 import com.aquariux.crypto.model.TradeRequest;
 import com.aquariux.crypto.model.Transaction;
@@ -30,12 +31,24 @@ public class TransactionController {
 
     @PostMapping("/v1.0/create")
     public Response<Transaction> createTransaction(@Valid @RequestBody TradeRequest tradeRequest) throws Exception {
-
         Response<Transaction> response = new Response<>();
-        // TODO
+
+        Transaction transaction;
+        // Sell/Bid
+        if (tradeRequest.getType().equals("BID")) {
+            transaction = transactionService.bid(tradeRequest.getUsername(), tradeRequest.getSymbol(), tradeRequest.getAmount());
+        }
+        // Buy/Ask
+        else if (tradeRequest.getType().equals("ASK")) {
+            transaction = transactionService.ask(tradeRequest.getUsername(), tradeRequest.getSymbol(), tradeRequest.getAmount());
+        }
+        else {
+            throw new TransactionException("Invalid transaction type");
+        }
+
         response.setCode(200);
         response.setMessage("Transaction Successful");
-
+        response.setData(transaction);
         return response;
     }
 }
