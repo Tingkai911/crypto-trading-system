@@ -2,7 +2,7 @@ package com.aquariux.crypto.service.impl;
 
 import com.aquariux.crypto.exception.UserWalletNotFoundException;
 import com.aquariux.crypto.model.UserWallet;
-import com.aquariux.crypto.repository.UserWalletRepository;
+import com.aquariux.crypto.repository.IUserWalletRepository;
 import com.aquariux.crypto.service.IUserWalletService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class UserWalletService implements IUserWalletService {
-    private final UserWalletRepository userWalletRepository;
+    private final IUserWalletRepository userWalletRepository;
 
     @Override
     public UserWallet getUserByUsername(String username) throws Exception {

@@ -1,5 +1,6 @@
 package com.aquariux.crypto.controller;
 
+import com.aquariux.crypto.exception.PriceNotFoundException;
 import com.aquariux.crypto.exception.UserWalletNotFoundException;
 import com.aquariux.crypto.model.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class ErrorControllerAdvice {
 
-    @ExceptionHandler(UserWalletNotFoundException.class)
+    @ExceptionHandler({UserWalletNotFoundException.class, PriceNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public Response handleUserWalletException(Exception ex) {
         log.error(ex.getMessage(), ex);

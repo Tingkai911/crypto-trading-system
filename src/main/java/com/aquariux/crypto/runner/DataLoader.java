@@ -1,7 +1,7 @@
 package com.aquariux.crypto.runner;
 
 import com.aquariux.crypto.model.UserWallet;
-import com.aquariux.crypto.repository.UserWalletRepository;
+import com.aquariux.crypto.repository.IUserWalletRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class DataLoader implements ApplicationRunner {
 
-    private final UserWalletRepository userRepository;
+    private final IUserWalletRepository userRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {

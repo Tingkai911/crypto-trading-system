@@ -1,7 +1,7 @@
 package com.aquariux.crypto.runner;
 
 import com.aquariux.crypto.model.Price;
-import com.aquariux.crypto.repository.PriceRepository;
+import com.aquariux.crypto.repository.IPriceRepository;
 import com.aquariux.crypto.service.IPriceRetrievalService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.*;
 @AllArgsConstructor
 public class PriceAggregationRunner {
     private final IPriceRetrievalService service;
-    private final PriceRepository priceRepository;
+    private final IPriceRepository priceRepository;
 
     private final Set<String> symbolSet = Set.of("ETHUSDT", "BTCUSDT");
 
@@ -51,7 +51,7 @@ public class PriceAggregationRunner {
             }
 
             log.info(aggregatedPrices.toString());
-
+            priceRepository.saveAll(aggregatedPrices);
         } catch (Exception e) {
             e.printStackTrace();
         }
