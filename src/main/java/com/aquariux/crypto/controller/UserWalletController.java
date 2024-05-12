@@ -5,6 +5,7 @@ import com.aquariux.crypto.model.UserWallet;
 import com.aquariux.crypto.service.IUserWalletService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class UserWalletController {
         log.info("getUser {}", username);
         Response<UserWallet> response = new Response<>();
         UserWallet userWallet = userService.getUserByUsername(username);
-        response.setCode(200);
+        response.setCode(HttpStatus.OK.value());
         response.setMessage("User wallet found");
         response.setData(userWallet);
         log.info(response.toString());
