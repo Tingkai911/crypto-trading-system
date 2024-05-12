@@ -1,6 +1,7 @@
 package com.aquariux.crypto.service.impl;
 
 import com.aquariux.crypto.exception.TransactionException;
+import com.aquariux.crypto.exception.TransactionNotFoundException;
 import com.aquariux.crypto.model.Price;
 import com.aquariux.crypto.model.Transaction;
 import com.aquariux.crypto.model.UserWallet;
@@ -240,7 +241,7 @@ public class TransactionServiceTests {
     @Test
     void testGetTransactionsByUsernameFailure() {
         when(transactionRepository.findAllByUsername(anyString())).thenThrow(new RuntimeException("Database error"));
-        Exception exception = assertThrows(TransactionException.class, () -> {
+        Exception exception = assertThrows(TransactionNotFoundException.class, () -> {
             transactionService.getTransactionsByUsername("user1");
         });
         assertEquals("Error fetching transactions", exception.getMessage());
@@ -250,7 +251,7 @@ public class TransactionServiceTests {
     void testGetPaginatedTransactionsByUsernameFailure() {
         Pageable pageable = PageRequest.of(0, 10);
         when(transactionRepository.findByUsername(anyString(), any(Pageable.class))).thenThrow(new RuntimeException("Database error"));
-        Exception exception = assertThrows(TransactionException.class, () -> {
+        Exception exception = assertThrows(TransactionNotFoundException.class, () -> {
             transactionService.getTransactionsByUsername("user1", pageable);
         });
         assertEquals("Error fetching transactions", exception.getMessage());
