@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "2b62cbb4-f7e0-4226-bd0b-0f1f6839f5eb",
+		"name": "aquariux",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12895835"
+	},
+	"item": [
+		{
+			"name": "Get User",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/user/v1.0/user1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"v1.0",
+						"user1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all prices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/price/v1.0/prices",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"price",
+						"v1.0",
+						"prices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get price",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/price/v1.0/BTCUSDT",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"price",
+						"v1.0",
+						"BTCUSDT"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all user transactions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/transaction/v1.0/all/user1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transaction",
+						"v1.0",
+						"all",
+						"user1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Transaction Buy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"user1\",\n    \"type\": \"ASK\",\n    \"symbol\": \"ETHUSDT\",\n    \"amount\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/transaction/v1.0/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transaction",
+						"v1.0",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Transaction Sell",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"user1\",\n    \"type\": \"BID\",\n    \"symbol\": \"ETHUSDT\",\n    \"amount\": 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/transaction/v1.0/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transaction",
+						"v1.0",
+						"create"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
