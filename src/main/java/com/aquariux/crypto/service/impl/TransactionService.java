@@ -29,84 +29,98 @@ public class TransactionService implements ITransactionService {
     // Sell/Bid
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     @Override
-    public Transaction bid(String username, String symbol, double amount) throws Exception {
+    public Transaction bid(String username, String symbol, double amount) throws TransactionException {
         Optional<UserWallet> userWalletOptional = userWalletRepository.findByUsername(username);
         if (userWalletOptional.isEmpty()) {
-            throw new TransactionException("User not found");
+            log.error("User not found: " + username);
+            throw new TransactionException("User not found: " + username);
         }
         UserWallet userWallet = userWalletOptional.get();
 
         Optional<Price> priceOptional = priceRepository.findBySymbol(symbol);
         if (priceOptional.isEmpty()) {
-            throw new TransactionException("Price not found");
+            log.error("Price not found: " + symbol);
+            throw new TransactionException("Price not found: " + symbol);
         }
         Price price = priceOptional.get();
         if (!price.getAllowTrading()) {
+            log.error("Trading is not allowed for symbol " + symbol);
             throw new TransactionException("Trading is not allowed for symbol " + symbol);
         }
 
-        String selling = symbol.substring(0, 3);
-        String buying = symbol.substring(3);
+        try {
+            String selling = symbol.substring(0, 3);
+            String buying = symbol.substring(3);
 
-        double balance = getBalance(selling, userWallet);
-        if (balance < amount) {
-            throw new TransactionException(String.format("Balance of %s in wallet is less than the required amount", selling));
+            double balance = getBalance(selling, userWallet);
+            if (balance < amount) {
+                throw new TransactionException(String.format("Balance of %s in wallet is less than the required amount", selling));
+            }
+            setBalance(selling, userWallet, balance - amount);
+            setBalance(buying, userWallet, getBalance(buying, userWallet) + amount * price.getBid());
+            userWalletRepository.save(userWallet);
+
+            Transaction transaction = new Transaction(username, Transaction.Type.BID, symbol, amount,
+                    price.getAsk(), price.getBid(), Instant.now());
+            transactionRepository.save(transaction);
+
+            log.info(transaction.toString());
+            return transaction;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new TransactionException(e.getMessage(), e);
         }
-        setBalance(selling, userWallet, balance - amount);
-        setBalance(buying, userWallet, getBalance(buying, userWallet) + amount * price.getBid());
-        userWalletRepository.save(userWallet);
-
-        Transaction transaction = new Transaction(username, Transaction.Type.BID, symbol, amount,
-                price.getAsk(), price.getBid(), Instant.now());
-        transactionRepository.save(transaction);
-
-        log.info(transaction.toString());
-
-        return transaction;
     }
 
     // Buy/Ask
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     @Override
-    public Transaction ask(String username, String symbol, double amount) throws Exception {
+    public Transaction ask(String username, String symbol, double amount) throws TransactionException {
         Optional<UserWallet> userWalletOptional = userWalletRepository.findByUsername(username);
         if (userWalletOptional.isEmpty()) {
-            throw new TransactionException("User not found");
+            log.error("User not found: " + username);
+            throw new TransactionException("User not found: " + username);
         }
         UserWallet userWallet = userWalletOptional.get();
 
         Optional<Price> priceOptional = priceRepository.findBySymbol(symbol);
         if (priceOptional.isEmpty()) {
-            throw new TransactionException("Price not found");
+            log.error("Price not found: " + symbol);
+            throw new TransactionException("Price not found: " + symbol);
         }
         Price price = priceOptional.get();
         if (!price.getAllowTrading()) {
+            log.error("Trading is not allowed for symbol " + symbol);
             throw new TransactionException("Trading is not allowed for symbol " + symbol);
         }
 
-        String buying = symbol.substring(0, 3);
-        String selling = symbol.substring(3);
+        try {
+            String buying = symbol.substring(0, 3);
+            String selling = symbol.substring(3);
 
-        double funds = amount * price.getAsk();
-        double balance = getBalance(selling, userWallet);
-        if (balance < funds) {
-            throw new TransactionException(String.format("Balance of %s in wallet is less than the required amount", selling));
+            double funds = amount * price.getAsk();
+            double balance = getBalance(selling, userWallet);
+            if (balance < funds) {
+                throw new TransactionException(String.format("Balance of %s in wallet is less than the required amount", selling));
+            }
+            setBalance(selling, userWallet, getBalance(selling, userWallet) - funds);
+            setBalance(buying, userWallet, getBalance(buying, userWallet) + amount);
+            userWalletRepository.save(userWallet);
+
+            Transaction transaction = new Transaction(username, Transaction.Type.ASK, symbol, amount,
+                    price.getAsk(), price.getBid(), Instant.now());
+            transactionRepository.save(transaction);
+
+            log.info(transaction.toString());
+            return transaction;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new TransactionException(e.getMessage(), e);
         }
-        setBalance(selling, userWallet, getBalance(selling, userWallet) - funds);
-        setBalance(buying, userWallet, getBalance(buying, userWallet) + amount);
-        userWalletRepository.save(userWallet);
-
-        Transaction transaction = new Transaction(username, Transaction.Type.ASK, symbol, amount,
-                price.getAsk(), price.getBid(), Instant.now());
-        transactionRepository.save(transaction);
-
-        log.info(transaction.toString());
-
-        return transaction;
     }
 
     @Override
-    public List<Transaction> getTransactionsByUsername(String username) throws Exception {
+    public List<Transaction> getTransactionsByUsername(String username) throws TransactionException {
         return transactionRepository.findAllByUsername(username);
     }
 

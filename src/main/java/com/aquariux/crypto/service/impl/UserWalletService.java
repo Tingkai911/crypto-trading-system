@@ -17,11 +17,21 @@ public class UserWalletService implements IUserWalletService {
     private final IUserWalletRepository userWalletRepository;
 
     @Override
-    public UserWallet getUserByUsername(String username) throws Exception {
-        Optional<UserWallet> user3 = userWalletRepository.findByUsername(username);
-        if (user3.isEmpty()) {
-            throw new UserWalletNotFoundException(username + " is not found");
+    public UserWallet getUserByUsername(String username) throws UserWalletNotFoundException {
+        Optional<UserWallet> userWallet;
+
+        try {
+            userWallet = userWalletRepository.findByUsername(username);
+        } catch (Exception e) {
+            log.error("Error while accessing database for user: {}", username, e);
+            throw new UserWalletNotFoundException("Failed to retrieve user data for username: " + username, e);
         }
-        return user3.get();
+
+        if (userWallet.isEmpty()) {
+            log.warn("No user wallet found for username: {}", username);
+            throw new UserWalletNotFoundException("User wallet for username '" + username + "' is not found");
+        }
+
+        return userWallet.get();
     }
 }

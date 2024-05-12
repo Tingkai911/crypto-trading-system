@@ -44,7 +44,7 @@ public class TransactionServiceTests {
             transactionService.bid("unknownUser", "BTCUSDT", 1);
         });
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("User not found: unknownUser", exception.getMessage());
         verify(transactionRepository, never()).save(any(Transaction.class));
     }
 
@@ -57,7 +57,7 @@ public class TransactionServiceTests {
             transactionService.bid("validUser", "UnknownSymbol", 1);
         });
 
-        assertEquals("Price not found", exception.getMessage());
+        assertEquals("Price not found: UnknownSymbol", exception.getMessage());
         verify(transactionRepository, never()).save(any(Transaction.class));
     }
 
@@ -129,7 +129,7 @@ public class TransactionServiceTests {
             transactionService.ask("unknownUser", "BTCUSDT", 1);
         });
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("User not found: unknownUser", exception.getMessage());
         verify(transactionRepository, never()).save(any(Transaction.class));
     }
 
@@ -142,7 +142,7 @@ public class TransactionServiceTests {
             transactionService.ask("validUser", "UnknownSymbol", 1);
         });
 
-        assertEquals("Price not found", exception.getMessage());
+        assertEquals("Price not found: UnknownSymbol", exception.getMessage());
         verify(transactionRepository, never()).save(any(Transaction.class));
     }
 

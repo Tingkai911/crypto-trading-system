@@ -1,7 +1,7 @@
 package com.aquariux.crypto.client.impl;
 
 import com.aquariux.crypto.configuration.PriceAggregationConfig;
-import com.aquariux.crypto.exception.PriceRetrievalException;
+import com.aquariux.crypto.exception.PriceRetrievalClientException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,9 +49,15 @@ public class PriceRetrievalClientTest {
     void testGetPriceFromBinance_Error() {
         ResponseEntity<JsonNode> responseEntity = new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
         when(restTemplate.getForEntity(config.getBinance(), JsonNode.class)).thenReturn(responseEntity);
-
-        Exception exception = assertThrows(PriceRetrievalException.class, () -> priceRetrievalClient.getPriceFromBinance());
+        Exception exception = assertThrows(PriceRetrievalClientException.class, () -> priceRetrievalClient.getPriceFromBinance());
         assertTrue(exception.getMessage().contains("Unable to retrieve data from binance"));
+    }
+
+    @Test
+    void testGetPriceFromBinance_RestClientException() {
+        when(restTemplate.getForEntity(config.getBinance(), JsonNode.class)).thenThrow(new RestClientException("error"));
+        Exception exception = assertThrows(PriceRetrievalClientException.class, () -> priceRetrievalClient.getPriceFromBinance());
+        assertTrue(exception.getMessage().contains("error"));
     }
 
     @Test
@@ -72,9 +79,15 @@ public class PriceRetrievalClientTest {
         ResponseEntity<JsonNode> responseEntity = new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
         when(restTemplate.getForEntity(config.getHuobi(), JsonNode.class)).thenReturn(responseEntity);
 
-        Exception exception = assertThrows(PriceRetrievalException.class, () -> priceRetrievalClient.getPriceFromHuobi());
+        Exception exception = assertThrows(PriceRetrievalClientException.class, () -> priceRetrievalClient.getPriceFromHuobi());
         assertTrue(exception.getMessage().contains("Unable to retrieve data from huobi"));
     }
 
+    @Test
+    void testGetPriceFromHuobi_RestClientException() {
+        when(restTemplate.getForEntity(config.getBinance(), JsonNode.class)).thenThrow(new RestClientException("error"));
+        Exception exception = assertThrows(PriceRetrievalClientException.class, () -> priceRetrievalClient.getPriceFromHuobi());
+        assertTrue(exception.getMessage().contains("error"));
+    }
 }
 

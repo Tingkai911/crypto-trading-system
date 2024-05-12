@@ -21,11 +21,23 @@ public class PriceRetrievalService implements IPriceRetrievalService {
     private final IPriceRepository priceRepository;
 
     @Override
-    public Map<String, Price> getPriceFromBinance(Set<String> symbolSet) throws Exception {
-        JsonNode root = priceAggregationClient.getPriceFromBinance();
+    public Map<String, Price> getPriceFromBinance(Set<String> symbolSet) throws PriceRetrievalException {
+        JsonNode root;
         Map<String, Price> prices = new HashMap<>();
 
-        if (root != null && root.isArray()) {
+        try {
+            root = priceAggregationClient.getPriceFromBinance();
+        } catch (Exception e) {
+            log.error("Error retrieving data from Binance API", e);
+            throw new PriceRetrievalException("Error retrieving data from Binance API", e);
+        }
+
+        if (root == null || !root.isArray()) {
+            log.error("Expected an array but got null or a different type from Binance");
+            throw new PriceRetrievalException("Received malformed data structure from Binance");
+        }
+
+        try {
             for (JsonNode objectNode : root) {
                 if (objectNode.has("symbol")) {
                     String symbolValue = objectNode.get("symbol").asText().toUpperCase();
@@ -36,20 +48,33 @@ public class PriceRetrievalService implements IPriceRetrievalService {
                     }
                 }
             }
-        } else {
-            throw new PriceRetrievalException("Data from binance is corrupted");
+        } catch (Exception e) {
+            log.error("Error processing price data from Binance", e);
+            throw new PriceRetrievalException("Error processing price data from Binance", e);
         }
 
         return prices;
     }
 
     @Override
-    public Map<String, Price> getPriceFromHuobi(Set<String> symbolSet) throws Exception {
-        JsonNode root = priceAggregationClient.getPriceFromHuobi();
+    public Map<String, Price> getPriceFromHuobi(Set<String> symbolSet) throws PriceRetrievalException {
+        JsonNode root;
         Map<String, Price> prices = new HashMap<>();
 
-        if (root.has("data") && root.get("data").isArray()) {
-            JsonNode data = root.get("data");
+        try {
+            root = priceAggregationClient.getPriceFromHuobi();
+        } catch (Exception e) {
+            log.error("Error retrieving data from Huobi API", e);
+            throw new PriceRetrievalException("Error retrieving data from Huobi API", e);
+        }
+
+        if (root == null || !root.has("data") || !root.get("data").isArray()) {
+            log.error("Expected an array under 'data', but got something else from Huobi");
+            throw new PriceRetrievalException("Received malformed data structure from Huobi");
+        }
+
+        JsonNode data = root.get("data");
+        try {
             for (JsonNode objectNode : data) {
                 if (objectNode.has("symbol")) {
                     String symbolValue = objectNode.get("symbol").asText().toUpperCase();
@@ -60,28 +85,47 @@ public class PriceRetrievalService implements IPriceRetrievalService {
                     }
                 }
             }
-        } else {
-            throw new PriceRetrievalException("Data from huobi is corrupted");
+        } catch (Exception e) {
+            log.error("Error processing price data from Huobi", e);
+            throw new PriceRetrievalException("Error processing price data from Huobi", e);
         }
 
         return prices;
     }
 
     @Override
-    public List<Price> getAllPrices() throws Exception {
-       List<Price> prices = priceRepository.findAll();
-       if (prices.isEmpty()) {
-           throw new PriceNotFoundException("No prices found");
-       }
-       return prices;
+    public List<Price> getAllPrices() throws PriceNotFoundException {
+        List<Price> prices;
+        try {
+            prices = priceRepository.findAll();
+        } catch (Exception e) {
+            log.error("Database error occurred while retrieving all prices", e);
+            throw new PriceNotFoundException("Failed to retrieve prices due to a data error", e);
+        }
+
+        if (prices.isEmpty()) {
+            log.warn("No prices found in the repository");
+            throw new PriceNotFoundException("No prices found");
+        }
+
+        return prices;
     }
 
     @Override
-    public Price getPriceBySymbol(String symbol) throws Exception {
-        Optional<Price> price = priceRepository.findBySymbol(symbol);
+    public Price getPriceBySymbol(String symbol) throws PriceNotFoundException {
+        Optional<Price> price;
+        try {
+            price = priceRepository.findBySymbol(symbol);
+        } catch (Exception e) {
+            log.error("Database error occurred while retrieving price for symbol: {}", symbol, e);
+            throw new PriceNotFoundException("Failed to retrieve price due to a data error for symbol: " + symbol, e);
+        }
+
         if (price.isEmpty()) {
+            log.warn("No price found for symbol: {}", symbol);
             throw new PriceNotFoundException("No price found for symbol: " + symbol);
         }
+
         return price.get();
     }
 }

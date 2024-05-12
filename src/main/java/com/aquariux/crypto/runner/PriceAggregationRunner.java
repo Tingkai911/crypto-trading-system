@@ -56,7 +56,7 @@ public class PriceAggregationRunner {
             log.info(aggregatedPrices.toString());
             priceRepository.saveAll(aggregatedPrices);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 }
