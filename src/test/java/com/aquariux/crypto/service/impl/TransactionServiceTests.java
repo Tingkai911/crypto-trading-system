@@ -12,12 +12,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -206,5 +211,48 @@ public class TransactionServiceTests {
 
         verify(userWalletRepository).save(userWallet);
         verify(transactionRepository).save(any(Transaction.class));
+    }
+
+    @Test
+    void testGetTransactionsByUsername_Success() throws Exception {
+        Transaction transaction = new Transaction();
+        List<Transaction> transactionList = Arrays.asList(transaction);
+        when(transactionRepository.findAllByUsername(anyString())).thenReturn(transactionList);
+        List<Transaction> results = transactionService.getTransactionsByUsername("user1");
+        assertNotEquals(0, results.size());
+        assertEquals(transactionList, results);
+        verify(transactionRepository).findAllByUsername("user1");
+    }
+
+    @Test
+    void testGetPaginatedTransactionsByUsername_Success() throws Exception {
+        Transaction transaction = new Transaction();
+        List<Transaction> transactionList = Arrays.asList(transaction);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Transaction> transactionPage = new PageImpl<>(transactionList, pageable, 1);
+        when(transactionRepository.findByUsername(anyString(), any(Pageable.class))).thenReturn(transactionPage);
+        Page<Transaction> results = transactionService.getTransactionsByUsername("user1", pageable);
+        assertNotNull(results);
+        assertEquals(transactionList, results.getContent());
+        verify(transactionRepository).findByUsername("user1", pageable);
+    }
+
+    @Test
+    void testGetTransactionsByUsernameFailure() {
+        when(transactionRepository.findAllByUsername(anyString())).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(TransactionException.class, () -> {
+            transactionService.getTransactionsByUsername("user1");
+        });
+        assertEquals("Error fetching transactions", exception.getMessage());
+    }
+
+    @Test
+    void testGetPaginatedTransactionsByUsernameFailure() {
+        Pageable pageable = PageRequest.of(0, 10);
+        when(transactionRepository.findByUsername(anyString(), any(Pageable.class))).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(TransactionException.class, () -> {
+            transactionService.getTransactionsByUsername("user1", pageable);
+        });
+        assertEquals("Error fetching transactions", exception.getMessage());
     }
 }

@@ -5,6 +5,7 @@ import com.aquariux.crypto.model.Response;
 import com.aquariux.crypto.service.IPriceRetrievalService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ public class PriceController {
         log.error("getAllPrices");
         Response<List<Price>> response = new Response<>();
         List<Price> prices = priceRetrievalService.getAllPrices();
-        response.setCode(200);
+        response.setCode(HttpStatus.OK.value());
         response.setMessage("List of trading prices");
         response.setData(prices);
         log.info(response.toString());
@@ -37,7 +38,7 @@ public class PriceController {
         Response<Price> response = new Response<>();
         symbol = symbol.toUpperCase();
         Price price = priceRetrievalService.getPriceBySymbol(symbol);
-        response.setCode(200);
+        response.setCode(HttpStatus.OK.value());
         response.setMessage("Price for symbol: " + symbol);
         response.setData(price);
         log.info(response.toString());

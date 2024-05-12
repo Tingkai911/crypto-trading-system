@@ -1,6 +1,7 @@
 package com.aquariux.crypto.service.impl;
 
 import com.aquariux.crypto.exception.TransactionException;
+import com.aquariux.crypto.exception.TransactionNotFoundException;
 import com.aquariux.crypto.model.Price;
 import com.aquariux.crypto.model.Transaction;
 import com.aquariux.crypto.model.UserWallet;
@@ -10,6 +11,8 @@ import com.aquariux.crypto.repository.IUserWalletRepository;
 import com.aquariux.crypto.service.ITransactionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,8 +123,21 @@ public class TransactionService implements ITransactionService {
     }
 
     @Override
-    public List<Transaction> getTransactionsByUsername(String username) throws TransactionException {
-        return transactionRepository.findAllByUsername(username);
+    public List<Transaction> getTransactionsByUsername(String username) throws TransactionNotFoundException {
+        try {
+            return transactionRepository.findAllByUsername(username);
+        } catch (Exception e) {
+            throw new TransactionNotFoundException("Error fetching transactions", e);
+        }
+    }
+
+    @Override
+    public Page<Transaction> getTransactionsByUsername(String username, Pageable pageable) throws TransactionNotFoundException {
+        try {
+            return transactionRepository.findByUsername(username, pageable);
+        } catch (Exception e) {
+            throw new TransactionNotFoundException("Error fetching transactions", e);
+        }
     }
 
     private double getBalance(String symbol, UserWallet userWallet) throws Exception {

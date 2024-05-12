@@ -8,6 +8,9 @@ import com.aquariux.crypto.service.ITransactionService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +27,20 @@ public class TransactionController {
         log.info("getAllTransactions {}", username);
         Response<List<Transaction>> response = new Response<>();
         List<Transaction> transactions = transactionService.getTransactionsByUsername(username);
-        response.setCode(200);
+        response.setCode(HttpStatus.OK.value());
         response.setMessage("All transactions for username: " + username);
+        response.setData(transactions);
+        log.info(response.toString());
+        return response;
+    }
+
+    @GetMapping("/v1.0/paginated/{username}")
+    public Response<Page<Transaction>> getPaginatedTransactions(@PathVariable String username, Pageable pageable) throws Exception {
+        log.info("getPaginatedTransactions {}, page: {}, size: {}", username, pageable.getPageNumber(), pageable.getPageSize());
+        Response<Page<Transaction>> response = new Response<>();
+        Page<Transaction> transactions = transactionService.getTransactionsByUsername(username, pageable);
+        response.setCode(HttpStatus.OK.value());
+        response.setMessage("Paginated transactions for username: " + username);
         response.setData(transactions);
         log.info(response.toString());
         return response;
@@ -49,7 +64,7 @@ public class TransactionController {
             throw new TransactionException("Invalid transaction type");
         }
 
-        response.setCode(200);
+        response.setCode(HttpStatus.OK.value());
         response.setMessage("Transaction Successful");
         response.setData(transaction);
         log.info(response.toString());
