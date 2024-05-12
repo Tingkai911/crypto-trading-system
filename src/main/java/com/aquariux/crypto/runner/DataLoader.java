@@ -21,6 +21,7 @@ public class DataLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         userRepository.save(new UserWallet("user1", 50000D, 0D, 0D));
+        userRepository.save(new UserWallet("user2", 50000D, 0D, 0D));
 
 //        transactionRepository.save(new Transaction("user1", Transaction.Type.ASK, "ETHUSDT", 0, 0, 0, Instant.now()));
 //        transactionRepository.save(new Transaction("user1", Transaction.Type.BID,  "BTCUSDT", 0, 0, 0, Instant.now()));
