@@ -21,16 +21,19 @@ public class TransactionController {
 
     @GetMapping("/v1.0/all/{username}")
     public Response<List<Transaction>> getAllTransactions(@PathVariable String username) throws Exception {
+        log.info("getAllTransactions {}", username);
         Response<List<Transaction>> response = new Response<>();
         List<Transaction> transactions = transactionService.getTransactionsByUsername(username);
         response.setCode(200);
         response.setMessage("All transactions for username: " + username);
         response.setData(transactions);
+        log.info(response.toString());
         return response;
     }
 
     @PostMapping("/v1.0/create")
     public Response<Transaction> createTransaction(@Valid @RequestBody TradeRequest tradeRequest) throws Exception {
+        log.info("createTransaction {}", tradeRequest);
         Response<Transaction> response = new Response<>();
 
         Transaction transaction;
@@ -49,6 +52,7 @@ public class TransactionController {
         response.setCode(200);
         response.setMessage("Transaction Successful");
         response.setData(transaction);
+        log.info(response.toString());
         return response;
     }
 }
